@@ -1,18 +1,19 @@
 import numpy as np
+import pandas as pd
 
 parameters = {}
 
 default_params = {
 	'dA': 0.5*(np.sqrt(2)-1),
 	'dB': 0.5*(np.sqrt(2)+1),
-	'c': 0.1,
-	'sigma': 0.2,
-	'Nsteps': int(1e6)
+	'c': 0.25,
+	'sigma': .2,
+	'Nsteps': int(1e5)
 }
 
-Dt = 1./default_params['dA']
-Ss = np.array([250,251,252], dtype=int)
-Ntaus = np.array([900, 1000, 1100])
+Dt = 1e-3/default_params['dA']
+Ss = np.array([100, 101], dtype=int)
+Ntaus = np.array([900, 950, 1000, 1050, 1100])
 
 i = 0
 for S in Ss:
@@ -21,4 +22,8 @@ for S in Ss:
 		parameters[i]['Dt'] = Dt
 		parameters[i]['S'] = S
 		parameters[i]['Ntau'] = Ntau
+		parameters[i]['tau'] = Ntau*Dt
+		parameters[i]['rB'] = np.sqrt(S*default_params['c'])*default_params['sigma']
 		i += 1
+
+pd.DataFrame(parameters).T.to_csv('parameters.csv')
