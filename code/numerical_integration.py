@@ -10,6 +10,7 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import seaborn as sns
 import imageio
+from tqdm import tqdm
 
 import os
 from os.path import isfile, join
@@ -22,12 +23,9 @@ import sys
 import params as par
 
 LOCAL_PATH = os.getcwd()
-SIMULATIONS_PATH = '../../simulations'
-os.makedirs(SIMULATIONS_PATH, exist_ok=True)
-LOG_PATH = '../../log'
-os.makedirs(LOG_PATH, exist_ok=True)
-FIG_PATH = '../../fig'
-os.makedirs(FIG_PATH, exist_ok=True)
+SIMULATIONS_PATH = par.SIMULATIONS_PATH
+LOG_PATH = par.LOG_PATH
+FIG_PATH = par.FIG_PATH
 
 custom_params = {"axes.spines.left": True, 
                  "axes.spines.right": True,
@@ -145,7 +143,7 @@ def numerical_integration(S, dA, dB, c, sigma, Dt, Nsteps_max, Ntau, x0, flag):
     stop_counter = 0
     count_each = 100
 
-    for i in range(count_each):
+    for i in tqdm(range(count_each)):
         for step in range(int(Nsteps/count_each)):
             time_step = int(step + i*Nsteps/count_each)
             #print (time_step)
@@ -162,26 +160,26 @@ def numerical_integration(S, dA, dB, c, sigma, Dt, Nsteps_max, Ntau, x0, flag):
             xf = P_B@U[10*Ntau+time_step+1]
             X[time_step+1] = xf.real
 
-        os.chdir(FIG_PATH)
-        directory = filename + '/evolution/'
-        #directory = 'Xdistr_dA_{0:1.2f}_dB_{1:1.2f}_S_{2}_c_{3:1.2f}_sigma_{4:1.2f}_Nsteps_{5}_tau_{6}/evolution/'.format(dA,dB,S,c,sigma,Nsteps,Ntau)
-        os.makedirs(directory,exist_ok=True)
-        fig, ax = plt.subplots(figsize=(16,9))
-        ax.set_xlabel('time steps')
-        ax.set_ylabel('X(t)')
-        for k in range(10):
-            ax.plot(X[:,k])
-        #filename = 'Xdistr_dA_{0:1.2f}_dB_{1:1.2f}_S_{2}_c_{3:1.2f}_sigma_{4:1.2f}_Nsteps_{5}_tau_{6}_{7}.png'.format(dA,dB,S,c,sigma,Nsteps,Ntau, i+1)
-        fig.savefig(directory + filename + '_{}.png'.format(i+1), dpi=150)
-        plt.close()
-        os.chdir(LOCAL_PATH)
+        # os.chdir(FIG_PATH)
+        # directory = filename + '/evolution/'
+        # #directory = 'Xdistr_dA_{0:1.2f}_dB_{1:1.2f}_S_{2}_c_{3:1.2f}_sigma_{4:1.2f}_Nsteps_{5}_tau_{6}/evolution/'.format(dA,dB,S,c,sigma,Nsteps,Ntau)
+        # os.makedirs(directory,exist_ok=True)
+        # fig, ax = plt.subplots(figsize=(16,9))
+        # ax.set_xlabel('time steps')
+        # ax.set_ylabel('X(t)')
+        # for k in range(10):
+        #     ax.plot(X[:,k])
+        # #filename = 'Xdistr_dA_{0:1.2f}_dB_{1:1.2f}_S_{2}_c_{3:1.2f}_sigma_{4:1.2f}_Nsteps_{5}_tau_{6}_{7}.png'.format(dA,dB,S,c,sigma,Nsteps,Ntau, i+1)
+        # fig.savefig(directory + filename + '_{}.png'.format(i+1), dpi=150)
+        # plt.close()
+        # os.chdir(LOCAL_PATH)
 
         if ((np.abs(X[time_step+1,:])< 1e-6).all() or (np.abs(X[time_step+1,:])> 1e6).all()):
             stop_counter += 1
             if stop_counter >= 5:
                 print('Steady state or diverging state reached. Interrupting simulation.') 
                 break
-        print ('{0:2.1f} percent of the simulation done'.format(100.*(i+1)/count_each))
+        #print ('{0:2.1f} percent of the simulation done'.format(100.*(i+1)/count_each))
 
 
     os.chdir(SIMULATIONS_PATH)

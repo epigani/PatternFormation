@@ -1,5 +1,16 @@
 import numpy as np
 import pandas as pd
+import os
+
+
+LOCAL_PATH = os.getcwd()
+SIMULATIONS_PATH = '../../simulations'
+LOG_PATH = '../../log'
+FIG_PATH = '../../fig'
+
+os.makedirs(SIMULATIONS_PATH, exist_ok=True)
+os.makedirs(LOG_PATH, exist_ok=True)
+os.makedirs(FIG_PATH, exist_ok=True)
 
 parameters = {}
 
